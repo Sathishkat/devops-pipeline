@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('sathish_kat')
+        DOCKERHUB_CREDENTIALS = credentials('sathishkat')
     }
 
     stages {
@@ -14,7 +14,7 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t sathish_kat-katta@ps1/flask-app:latest .'
+                bat 'docker build -t sathishkat/flask-app:latest .'
             }
         }
 
@@ -22,7 +22,7 @@ pipeline {
         
             steps {
                 bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
-                bat 'docker push sathish_kat-katta@ps1/flask-app:latest'
+                bat 'docker push sathishkat/flask-app:latest'
             }
         }
 
