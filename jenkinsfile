@@ -19,8 +19,8 @@ pipeline {
         }
 
         stage('Push to Docker Hub') {
-        
             steps {
+                // Corrected login command
                 bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
                 bat 'docker push sathishkat/flask-app:latest'
             }
