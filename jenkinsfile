@@ -14,15 +14,14 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t sathishkat/flask-app:latest .'
+                bat 'docker build -t sathishkat/devops-flask-app:latest .'
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                // Corrected login command
-                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
-                bat 'docker push sathishkat/flask-app:latest'
+                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u sathishkat --password-stdin'
+                bat 'docker push sathishkat/devops-flask-app:latest'
             }
         }
 
@@ -31,5 +30,8 @@ pipeline {
                 bat 'kubectl apply -f deployment.yaml'
             }
         }
+    }
+}
+
     }
 }
