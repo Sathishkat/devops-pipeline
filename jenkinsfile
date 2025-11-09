@@ -20,8 +20,12 @@ pipeline {
 
         stage('Push to Docker Hub') {
             steps {
-                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u sathishkat --password-stdin'
-                bat 'docker push sathishkat/devops-flask-app:latest'
+                withCredentials([usernamePassword(credentialsId: 'sathishkat', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat '''
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker push sathishkat/devops-flask-app:latest
+                    '''
+                }
             }
         }
 
