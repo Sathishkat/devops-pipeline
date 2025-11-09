@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('sathish_kat-katta@ps1')
+        DOCKERHUB_CREDENTIALS = credentials('sathish_kat')
     }
 
     stages {
@@ -14,20 +14,21 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                sh 'docker build -t your-dockerhub-username/flask-app:latest .'
+                bat 'docker build -t sathish_kat-katta@ps1/flask-app:latest .'
             }
         }
 
         stage('Push to Docker Hub') {
+        
             steps {
-                sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                sh 'docker push your-dockerhub-username/flask-app:latest'
+                bat 'echo %DOCKERHUB_CREDENTIALS_PSW% | docker login -u %DOCKERHUB_CREDENTIALS_USR% --password-stdin'
+                bat 'docker push sathish_kat-katta@ps1/flask-app:latest'
             }
         }
 
         stage('Deploy to Kubernetes') {
             steps {
-                sh 'kubectl apply -f deployment.yaml'
+                bat 'kubectl apply -f deployment.yaml'
             }
         }
     }
