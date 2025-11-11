@@ -38,6 +38,7 @@ pipeline {
             steps {
                 bat '''
                     echo Deploying application to Minikube...
+                    set KUBECONFIG=C:\\Users\\SATHISH.M\\.kube\\config
                     cd C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\devops-pipeline
                     kubectl apply -f deployment.yaml --validate=false
                     echo Checking pods...
