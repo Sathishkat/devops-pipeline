@@ -2,7 +2,8 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub-login')
+        DOCKER_IMAGE = 'sathishkat/devops-flask-app:latest'
     }
 
     stages {
@@ -14,16 +15,19 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t sathishkat/devops-flask-app:latest .'
+                bat '''
+                echo Building Docker image...
+                docker build -t %DOCKER_IMAGE% .
+                '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat '''
-                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                        docker push sathishkat/devops-flask-app:latest
+                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                    docker push %DOCKER_IMAGE%
                     '''
                 }
             }
@@ -31,7 +35,13 @@ pipeline {
 
         stage('Deploy to Kubernetes') {
             steps {
-                bat 'kubectl apply -f deployment.yaml'
+                bat '''
+                echo Deploying to Kubernetes...
+                cd C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\devops-pipeline
+                kubectl apply -f deployment.yaml --validate=false
+                echo Showing deployment status...
+                kubectl get pods -o wide
+                '''
             }
         }
     }
