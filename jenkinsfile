@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-login')
+        DOCKERHUB_CREDENTIALS = credentials('dockerhub')
         DOCKER_IMAGE = 'sathishkat/devops-flask-app:latest'
     }
 
@@ -16,18 +16,19 @@ pipeline {
         stage('Build Docker Image') {
             steps {
                 bat '''
-                echo Building Docker image...
-                docker build -t %DOCKER_IMAGE% .
+                    echo Building Docker image...
+                    docker build -t %DOCKER_IMAGE% .
                 '''
             }
         }
 
         stage('Push to Docker Hub') {
             steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     bat '''
-                    echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
-                    docker push %DOCKER_IMAGE%
+                        echo Logging into DockerHub...
+                        echo %DOCKER_PASS% | docker login -u %DOCKER_USER% --password-stdin
+                        docker push %DOCKER_IMAGE%
                     '''
                 }
             }
@@ -36,11 +37,11 @@ pipeline {
         stage('Deploy to Kubernetes') {
             steps {
                 bat '''
-                echo Deploying to Kubernetes...
-                cd C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\devops-pipeline
-                kubectl apply -f deployment.yaml --validate=false
-                echo Showing deployment status...
-                kubectl get pods -o wide
+                    echo Deploying application to Minikube...
+                    cd C:\\ProgramData\\Jenkins\\.jenkins\\workspace\\devops-pipeline
+                    kubectl apply -f deployment.yaml --validate=false
+                    echo Checking pods...
+                    kubectl get pods -o wide
                 '''
             }
         }
